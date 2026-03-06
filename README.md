@@ -1,6 +1,9 @@
 # parser_documentation
 
-Парсит документацию (скрины/страницы) со Scribd и сохраняет в папку изображений и в PDF.
+Парсит документацию со Scribd в **один PDF**.
+
+- Если в контейнере документа есть ссылка на PDF — скрипт **скачивает его как есть**.
+- Если нет — собирает **один PDF** из изображений и текста по страницам (без сохранения в .txt).
 
 ## Установка
 
@@ -8,34 +11,28 @@
 
 ```bash
 pip install -r requirements.txt
-# Если будете использовать парсинг по URL (--url):
 playwright install chromium
 ```
 
 ## Использование
 
-### Вариант 1: по URL страницы Scribd
-
-Скрипт откроет страницу в headless-браузере, дождётся `document_container` и вытащит изображения:
+### По URL страницы Scribd
 
 ```bash
 python parse_scribd_document.py --url "https://ru.scribd.com/document/671620306/Ps-Cncsxy800-Manual" --out output
 ```
 
-### Вариант 2: из сохранённого HTML
+### Из сохранённого HTML контейнера
 
-1. Откройте документ на Scribd в браузере.
-2. Прокрутите документ, чтобы подгрузились нужные страницы (скрины).
-3. В DevTools (F12) найдите элемент с классом `document_container`, ПКМ → Copy → Copy outerHTML и сохраните в файл, например `scribd_page.html`.
-4. Запустите:
+1. Откройте документ на Scribd в браузере, прокрутите до конца (подгрузка всех страниц).
+2. F12 → Elements → найдите `div[role="document"].outer_page_container` → ПКМ → Copy → Copy outerHTML → вставьте в файл, например `scribd_page.html`.
+3. Запустите:
 
 ```bash
 python parse_scribd_document.py --html scribd_page.html --out output
 ```
 
-Результат: в папке `output` появятся файлы `001.png`, `002.jpg`, ... и один PDF `documentation.pdf` (или `*_documentation.pdf` при использовании `--html`).
-
-Только изображения без PDF: добавьте флаг `--no-pdf`.
+**Результат:** в папке `output` — один файл `documentation.pdf` (или `*_documentation.pdf` при `--html`). При сборке из страниц туда же сохраняются изображения `001.png`, `002.jpg`, … (для генерации PDF). Флаг `--no-pdf` отключает сборку PDF.
 
 ## VPN / доступ к Scribd
 
